@@ -127,7 +127,7 @@ class Main {
     this.logs.forEach((l) => {
       const p = document.createElement("p");
 
-      const logString = `• gen. ${l.generation}, best score: ${l.generation}, avg. score: ${l.mediumScore}`;
+      const logString = `• gen. ${l.generation}, best score: ${l.bestScore}, avg. score: ${l.mediumScore}`;
 
       p.textContent = logString;
       logsContainerElement.appendChild(p);

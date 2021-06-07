@@ -1,0 +1,129 @@
+canvas {
+  box-shadow: 0 0 5px #eee;
+  margin: 30px;
+  padding: 1px;
+}
+
+html {
+  height: 100%;
+  font-family: "Ubuntu", Arial, san-serif;
+}
+
+body {
+  margin: 0;
+  height: 100%;
+  display: flex;
+  background-color: #263445;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 250px;
+  padding: 30px 20px;
+  background-color: #eee;
+}
+
+main {
+  display: flex;
+  flex: 1 1 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+label {
+  font-weight: bold;
+  font-size: 20px;
+}
+
+input {
+  font-family: "Ubuntu", Arial, san-serif;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 8px 0 32px;
+  border: none;
+  border-radius: 5px;
+  padding: 8px;
+  background-color: #fff;
+}
+
+input:focus {
+  border: 1px solid #000;
+}
+
+input[type="range"] {
+  padding: 0;
+}
+
+button {
+  font-family: "Ubuntu", Arial, san-serif;
+  font-size: 20px;
+  font-weight: bold;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  margin-top: 8px;
+  padding: 12px;
+  background-color: #0075ff;
+  box-shadow: 0 5px 20px #bbb;
+  cursor: pointer;
+  outline: none;
+}
+
+button:hover,
+button:active {
+  background-color: #00489b;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.rates-wrapper {
+  display: flex;
+}
+.rates-wrapper div {
+  flex-basis: 50%;
+}
+
+.rates-wrapper div:nth-child(1) {
+  margin-right: 15px;
+}
+
+.rates-wrapper div input {
+  width: 86%;
+}
+
+.buttons-wrapper {
+  display: flex;
+}
+.buttons-wrapper button {
+  width: 100%;
+}
+
+.buttons-wrapper button:nth-child(1) {
+  margin-right: 15px;
+}
+
+.logs-wrapper {
+  padding: 10px;
+}
+
+.logs-wrapper .logs-container {
+  overflow-y: scroll;
+}
+
+.logs-wrapper p {
+  margin: 0;
+  margin-bottom: 5px;
+  font-size: 12px;
+  line-height: 12px;
+}
+
+.logs-wrapper .title {
+  font-size: 20px;
+  font-weight: bold;
+  padding-bottom: 15px;
+  border-bottom: 1px solid black;
+}

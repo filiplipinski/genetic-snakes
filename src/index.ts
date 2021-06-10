@@ -124,10 +124,12 @@ class Main {
     const logsContainerElement = document.querySelector(".logs-container");
     logsContainerElement.innerHTML = "";
 
-    this.logs.forEach((l) => {
+    [...this.logs].reverse().forEach((l) => {
       const p = document.createElement("p");
 
-      const logString = `• gen. ${l.generation}, best score: ${l.bestScore}, avg. score: ${l.mediumScore}`;
+      const logString = `• gen. ${l.generation}, best score: ${
+        l.bestScore
+      }, avg. score: ${l.mediumScore.toFixed(2)}`;
 
       p.textContent = logString;
       logsContainerElement.appendChild(p);

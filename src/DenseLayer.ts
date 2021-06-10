@@ -13,6 +13,15 @@ export class DenseLayer {
     this.biases = this.initBiases();
   }
 
+  // Relu or sigmoid
+  // sigmoid(number: number) {
+  //   return 1 / (1 + Math.exp(-number));
+  // }
+
+  relu(number: number) {
+    return Math.max(0, number);
+  }
+
   activate(inputs: number[]): number[] {
     let result = [];
 
@@ -24,6 +33,7 @@ export class DenseLayer {
       }
 
       result[i] += this.biases[i];
+      result[i] = this.relu(result[i]);
     }
 
     return result;

@@ -7,25 +7,37 @@ type GameConstructor = {
   boardSize: number;
   snakeMaxMoves: number;
   geneticProps: Omit<GeneticConstructor, "createNewSnake">;
+  onNextGeneration: () => void;
 };
 
 export class Game {
   public readonly boardSize: number;
   public readonly snakeMaxMoves: number;
   public readonly genetic: Genetic;
+  public bestSnake: Snake | null = null;
   public foods: Food[] = [];
-  public isOver = false;
+  private onNextGeneration: () => void;
 
   // zrobic obiekt i przekazac jako obiekt propsy do population
-  constructor({ boardSize, snakeMaxMoves, geneticProps }: GameConstructor) {
+  constructor({ boardSize, snakeMaxMoves, geneticProps, onNextGeneration }: GameConstructor) {
     this.boardSize = boardSize;
     this.snakeMaxMoves = snakeMaxMoves;
+    this.onNextGeneration = onNextGeneration;
     this.genetic = new Genetic({
       ...geneticProps,
       createNewSnake: () => this.createNewSnake(),
     });
 
     this.genetic.initialize();
+    this.generateNewFoodPosition();
+  }
+
+  public prepareGameForBestSnake() {
+    const copiedSnake = this.createNewSnake();
+    copiedSnake.brain = this.bestSnake.brain;
+
+    this.genetic.populationSize = 1;
+    this.genetic.population = [copiedSnake];
     this.generateNewFoodPosition();
   }
 
@@ -116,12 +128,32 @@ export class Game {
     ];
   }
 
-  public runStep() {
-    const isAnySnakeAlive = this.genetic.population.some((snake) => snake.isAlive);
+  private findBestSnake() {
+    const bestSnakeInGeneration = this.genetic.population.reduce((prev, curr) => {
+      return prev.score > curr.score ? prev : curr;
+    });
 
-    if (!isAnySnakeAlive) {
-      this.isOver = true;
-      return;
+    if (!this.bestSnake || bestSnakeInGeneration.score > this.bestSnake.score) {
+      this.bestSnake = bestSnakeInGeneration;
+    }
+  }
+
+  private evolveToNextGeneration() {
+    this.onNextGeneration();
+    this.genetic.updateGeneration();
+    this.generateNewFoodPosition();
+  }
+
+  public runStep({ shouldEvolve }: { shouldEvolve?: boolean }) {
+    // shouldEvolve is FALSE if runStep runned for bestSnake
+    if (shouldEvolve) {
+      this.findBestSnake();
+      const isAnySnakeAlive = this.genetic.population.some((snake) => snake.isAlive);
+
+      if (!isAnySnakeAlive) {
+        this.evolveToNextGeneration();
+        return;
+      }
     }
 
     const snakes = this.genetic.population;
@@ -130,6 +162,21 @@ export class Game {
       if (snakes[i].isAlive) {
         const state = this.getObservation(snakes[i], this.foods[i]);
         const direction = snakes[i].predictMove(state);
+
+        // TODO: snaki jak gina to wychodza czasem poza swoja sciane
+        // ponizej naprawia, ale i zamula od razu :<
+        // fix tego rowniez powinien fixnac brak szarego snaeku w bestSnake op zgodnie
+
+        // const copiedSnake = this.createNewSnake();
+        // copiedSnake.body = snakes[i].body;
+        // copiedSnake.move(direction);
+        // copiedSnake.checkCollisions(this.boardSize);
+        // if (!copiedSnake.isAlive) {
+        //   // console.log("wylecial");
+        //   snakes[i].isAlive = false;
+        //   return;
+        // }
+
         snakes[i].move(direction);
         snakes[i].checkCollisions(this.boardSize);
         this.feedSnake(snakes[i], i);

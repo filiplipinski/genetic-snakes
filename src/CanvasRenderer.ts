@@ -10,8 +10,8 @@ export class CanvasRenderer {
   private readonly ctx: CanvasRenderingContext2D;
   private readonly screen: Screen;
 
-  private readonly numOfGrids: number;
-  private readonly gridSizePx: number;
+  private readonly numOfBoardsInRow: number;
+  private readonly boardSizePx: number;
 
   constructor(game: Game, canvas: HTMLCanvasElement) {
     this.game = game;
@@ -22,10 +22,11 @@ export class CanvasRenderer {
     };
 
     // numRows to tyle ile ma byc wierszy, gdy np. populacji jest 99, to stworzy 10 wierszy i 10 kolumn
-    this.numOfGrids = Math.ceil(Math.sqrt(this.game.genetic.populationSize));
-    // grizSize = screenHeight to tyle ile pikseli / ilosc rows. Wtedy wyjdzie ile ma jeden grid pikseli
-    // height bo to i tak kwadrat
-    this.gridSizePx = this.screen.height / this.numOfGrids;
+    this.numOfBoardsInRow = Math.ceil(Math.sqrt(this.game.genetic.populationSize));
+
+    // boardSize = screenHeight to tyle ile pikseli / ilosc rows. Wtedy wyjdzie ile ma
+    // wysokosci i szeroksci jedna plansza
+    this.boardSizePx = this.screen.height / this.numOfBoardsInRow;
   }
 
   private drawRect(x: number, y: number, size: number, color: string) {
@@ -34,8 +35,8 @@ export class CanvasRenderer {
   }
 
   public drawGrid() {
-    for (let i = 0; i < this.numOfGrids; i++) {
-      for (let j = 0; j < this.numOfGrids; j++) {
+    for (let i = 0; i < this.numOfBoardsInRow; i++) {
+      for (let j = 0; j < this.numOfBoardsInRow; j++) {
         let color;
 
         if ((i + j) % 2) {
@@ -44,18 +45,18 @@ export class CanvasRenderer {
           color = "#212A37";
         }
 
-        this.drawRect(i * this.gridSizePx, j * this.gridSizePx, this.gridSizePx, color);
+        this.drawRect(i * this.boardSizePx, j * this.boardSizePx, this.boardSizePx, color);
       }
     }
   }
 
   public drawSnakes() {
     const snakes = this.game.genetic.population;
-    const stepSize = this.gridSizePx / this.game.boardSize;
+    const stepSize = this.boardSizePx / this.game.boardSize;
 
     for (let i = 0; i < snakes.length; i++) {
-      const xOffset = i % this.numOfGrids;
-      const yOffset = Math.floor(i / this.numOfGrids);
+      const xOffset = i % this.numOfBoardsInRow;
+      const yOffset = Math.floor(i / this.numOfBoardsInRow);
 
       // tu sie robi coraz ciemniejszy, przemyslec algortym
       const greencolorStep = 150 / snakes[i].body.length;
@@ -65,8 +66,8 @@ export class CanvasRenderer {
 
       for (let part of snakes[i].body) {
         this.drawRect(
-          xOffset * this.gridSizePx + part.x * stepSize,
-          yOffset * this.gridSizePx + part.y * stepSize,
+          xOffset * this.boardSizePx + part.x * stepSize,
+          yOffset * this.boardSizePx + part.y * stepSize,
           stepSize,
           snakes[i].isAlive ? `rgb(0, ${green}, 0)` : `rgb(${grey}, ${grey}, ${grey})`
         );
@@ -77,16 +78,16 @@ export class CanvasRenderer {
   }
 
   public drawFoods() {
-    const stepSize = this.gridSizePx / this.game.boardSize;
+    const stepSize = this.boardSizePx / this.game.boardSize;
 
     for (let i = 0; i < this.game.foods.length; i++) {
       if (this.game.genetic.population[i].isAlive) {
-        const xOffset = i % this.numOfGrids;
-        const yOffset = Math.floor(i / this.numOfGrids);
+        const xOffset = i % this.numOfBoardsInRow;
+        const yOffset = Math.floor(i / this.numOfBoardsInRow);
 
         this.drawRect(
-          xOffset * this.gridSizePx + this.game.foods[i].position.x * stepSize,
-          yOffset * this.gridSizePx + this.game.foods[i].position.y * stepSize,
+          xOffset * this.boardSizePx + this.game.foods[i].position.x * stepSize,
+          yOffset * this.boardSizePx + this.game.foods[i].position.y * stepSize,
           stepSize,
           "#f00"
         );

@@ -50,7 +50,7 @@ export class Snake {
     this.body = [nextHead].concat(tailWithoutLast);
     this.remainingMoves -= 1;
 
-    if (this.remainingMoves < 0) {
+    if (this.remainingMoves <= 0) {
       this.isAlive = false;
     }
   }

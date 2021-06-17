@@ -23,6 +23,7 @@ class Main {
   private readonly canvasElement: HTMLCanvasElement;
   private readonly startBtnElement: HTMLButtonElement;
   private readonly stopBtnElement: HTMLButtonElement;
+  private readonly bestSnakeElement: HTMLButtonElement;
 
   private isGameRunning = false;
   private game: Game;
@@ -33,6 +34,7 @@ class Main {
     this.canvasElement = document.querySelector("canvas");
     this.startBtnElement = document.querySelector("button#start");
     this.stopBtnElement = document.querySelector("button#stop");
+    this.bestSnakeElement = document.querySelector("button#best-snake");
 
     this.bindListeners();
   }
@@ -40,6 +42,7 @@ class Main {
   private bindListeners() {
     this.startBtnElement.addEventListener("click", () => this.start());
     this.stopBtnElement.addEventListener("click", () => this.stop());
+    this.bestSnakeElement.addEventListener("click", () => this.showBestSnake());
 
     document.querySelector("#frame-speed").addEventListener("input", (e) => {
       this.frameSpeed = parseInt((e.target as HTMLInputElement).value);
@@ -64,6 +67,7 @@ class Main {
 
   private start() {
     this.logs = [];
+    this.bestSnakeElement.disabled = true;
     this.startBtnElement.disabled = true;
     this.stopBtnElement.disabled = false;
     this.getInputValues();
@@ -76,6 +80,14 @@ class Main {
         populationSize: this.populationSize,
         crossoverRate: this.crossoverRate,
         mutationRate: this.mutationRate,
+      },
+      onNextGeneration: () => {
+        this.logs.push({
+          generation: this.game.genetic.generation,
+          bestScore: this.game.getBestScore(),
+          mediumScore: this.game.getMediumScore(),
+        });
+        this.renderLogs();
       },
     });
 
@@ -91,33 +103,50 @@ class Main {
     this.stopBtnElement.disabled = true;
   }
 
+  private showBestSnake() {
+    // TODO: wyrenderowac tego snake'a, do tego console.alert z danymi i potwierdzenim czy chce sie przerwac
+    this.stop();
+
+    this.game.prepareGameForBestSnake();
+    this.canvasRenderer = new CanvasRenderer(this.game, this.canvasElement); // reinitialize grid size which depends on genetic populationSize
+    this.runLoopForBestSnake();
+  }
+
   private runLoop() {
     if (!this.isGameRunning) {
       return;
+    }
+    if (this.game.bestSnake) {
+      this.bestSnakeElement.disabled = false;
     }
     this.canvasRenderer.drawGrid();
     this.canvasRenderer.drawSnakes();
     this.canvasRenderer.drawFoods();
 
-    this.game.runStep();
+    this.game.runStep({ shouldEvolve: true });
 
-    if (this.game.isOver) {
-      this.logs.push({
-        generation: this.game.genetic.generation,
-        bestScore: this.game.getBestScore(),
-        mediumScore: this.game.getMediumScore(),
-      });
-      this.renderLogs();
+    setTimeout(() => requestAnimationFrame(() => this.runLoop()), 1000 / this.frameSpeed);
+  }
 
-      // kolejna generacja
-      this.game.isOver = false;
-      this.game.genetic.updateGeneration();
-      this.game.generateNewFoodPosition();
+  private runLoopForBestSnake() {
+    // forBestSnake mode, there is always only one snake
+    if (!this.game.genetic.population[0].isAlive) {
+      // this.canvasRenderer.drawSnakes();
+      // TODO: zrobic aby snake sie robil szary po smierci
+      // nie robi sie bo brakuje tej klatki w ktorym jest dead
+      return;
     }
 
-    if (this.isGameRunning) {
-      setTimeout(() => requestAnimationFrame(() => this.runLoop()), 1000 / this.frameSpeed);
-    }
+    this.canvasRenderer.drawGrid();
+    this.canvasRenderer.drawSnakes();
+    this.canvasRenderer.drawFoods();
+
+    this.game.runStep({ shouldEvolve: false });
+
+    setTimeout(
+      () => requestAnimationFrame(() => this.runLoopForBestSnake()),
+      1000 / this.frameSpeed
+    );
   }
 
   private renderLogs() {

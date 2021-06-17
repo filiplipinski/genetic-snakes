@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "AI playing snake with Neural Network brain trained by Genetic Alhorithm",
   "scripts": {
-    "serve": "webpack serve",
+    "serve": "open http://localhost:8080 && webpack serve",
     "build": "webpack",
     "start": "npm run build && open dist/index.html"
   },

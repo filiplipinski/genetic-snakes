@@ -111,8 +111,7 @@ class Main {
         }
 
         if (this.game.genetic.generation >= this.speedModeGenerations) {
-          this.isGameRunning = false;
-          clearInterval(this.speedModeIntervalId);
+          this.stop();
           return;
         }
       },

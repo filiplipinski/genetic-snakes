@@ -127,3 +127,23 @@ button:disabled {
   padding-bottom: 15px;
   border-bottom: 1px solid black;
 }
+
+.speed-mode-wrapper {
+  margin-top: 32px;
+}
+.speed-mode-wrapper h3 {
+  text-decoration: underline;
+}
+.speed-mode-wrapper label {
+  font-size: 16px;
+}
+.speed-mode-btn-input-container {
+  display: flex;
+  align-items: flex-start;
+}
+.speed-mode-btn-input-container input {
+  margin-right: 16px;
+}
+.speed-mode-btn-input-container button {
+  width: 100%;
+}

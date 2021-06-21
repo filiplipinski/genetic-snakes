@@ -19,30 +19,35 @@ class Main {
   private crossoverRate: number;
   private mutationRate: number;
   private frameSpeed: number;
+  private speedModeGenerations: number;
 
   private readonly canvasElement: HTMLCanvasElement;
   private readonly startBtnElement: HTMLButtonElement;
   private readonly stopBtnElement: HTMLButtonElement;
   private readonly bestSnakeElement: HTMLButtonElement;
+  private readonly speedModeElement: HTMLButtonElement;
 
   private isGameRunning = false;
   private game: Game;
   private canvasRenderer: CanvasRenderer;
   private logs: LogData[] = [];
+  private speedModeIntervalId: NodeJS.Timeout;
 
   constructor() {
     this.canvasElement = document.querySelector("canvas");
     this.startBtnElement = document.querySelector("button#start");
     this.stopBtnElement = document.querySelector("button#stop");
     this.bestSnakeElement = document.querySelector("button#best-snake");
+    this.speedModeElement = document.querySelector("button#speed-mode-btn");
 
     this.bindListeners();
   }
 
   private bindListeners() {
-    this.startBtnElement.addEventListener("click", () => this.start());
+    this.startBtnElement.addEventListener("click", () => this.start("normal"));
     this.stopBtnElement.addEventListener("click", () => this.stop());
     this.bestSnakeElement.addEventListener("click", () => this.showBestSnake());
+    this.speedModeElement.addEventListener("click", () => this.runSpeedMode());
 
     document.querySelector("#frame-speed").addEventListener("input", (e) => {
       this.frameSpeed = parseInt((e.target as HTMLInputElement).value);
@@ -56,22 +61,30 @@ class Main {
     this.crossoverRate = getInputValue("#crossover-rate") / 100;
     this.mutationRate = getInputValue("#mutation-rate") / 100;
     this.frameSpeed = getInputValue("#frame-speed");
+    this.speedModeGenerations = getInputValue("#speed-mode");
   }
 
-  private setCanvasSize() {
+  private setCanvasSize(scale: number = 0.9) {
     // 90% of browser height is snake game, rest is margin
-    const size = document.querySelector("body").clientHeight * 0.9;
+    const size = document.querySelector("body").clientHeight * scale;
     this.canvasElement.width = size;
     this.canvasElement.height = size;
   }
 
-  private start() {
+  private resetCanvas() {
+    // reset canvas to initial state
+    this.canvasElement.width = 0;
+    this.canvasElement.height = 0;
+  }
+
+  private start(mode: "normal" | "speed") {
     this.logs = [];
+    this.renderLogs();
     this.bestSnakeElement.disabled = true;
     this.startBtnElement.disabled = true;
     this.stopBtnElement.disabled = false;
+    this.bestSnakeElement.disabled = false;
     this.getInputValues();
-    this.setCanvasSize();
 
     this.game = new Game({
       boardSize: this.boardSize,
@@ -88,12 +101,26 @@ class Main {
           mediumScore: this.game.getMediumScore(),
         });
         this.renderLogs();
+
+        if (mode !== "speed") {
+          return;
+        }
+
+        if (this.game.genetic.generation >= this.speedModeGenerations) {
+          this.isGameRunning = false;
+          clearInterval(this.speedModeIntervalId);
+          return;
+        }
       },
     });
-
     this.isGameRunning = true;
-    this.canvasRenderer = new CanvasRenderer(this.game, this.canvasElement);
 
+    if (mode === "speed") {
+      return;
+    }
+
+    this.setCanvasSize();
+    this.canvasRenderer = new CanvasRenderer(this.game, this.canvasElement);
     this.runLoop();
   }
 
@@ -101,13 +128,21 @@ class Main {
     this.isGameRunning = false;
     this.startBtnElement.disabled = false;
     this.stopBtnElement.disabled = true;
+
+    clearInterval(this.speedModeIntervalId);
   }
 
   private showBestSnake() {
-    // TODO: wyrenderowac tego snake'a, do tego console.alert z danymi i potwierdzenim czy chce sie przerwac
-    this.stop();
+    const hasConfirmed =
+      this.isGameRunning &&
+      confirm("Are you sure you want to run simulation for best snake? It will stop current job.");
+    if (this.isGameRunning && !hasConfirmed) {
+      return;
+    }
 
+    this.stop();
     this.game.prepareGameForBestSnake();
+    this.setCanvasSize(0.5);
     this.canvasRenderer = new CanvasRenderer(this.game, this.canvasElement); // reinitialize grid size which depends on genetic populationSize
     this.runLoopForBestSnake();
   }
@@ -128,11 +163,31 @@ class Main {
     setTimeout(() => requestAnimationFrame(() => this.runLoop()), 1000 / this.frameSpeed);
   }
 
+  private runSpeedMode() {
+    const hasConfirmed =
+      this.isGameRunning &&
+      confirm(
+        "Are you sure you want to run speed mode without simulation? It will stop current job."
+      );
+    if (this.isGameRunning && !hasConfirmed) {
+      return;
+    }
+
+    this.start("speed");
+    this.resetCanvas();
+
+    this.speedModeIntervalId = setInterval(() => {
+      for (let i = 0; i < 100; i++) {
+        this.game.runStep({ shouldEvolve: true });
+      }
+    }, 1);
+  }
+
   private runLoopForBestSnake() {
     // forBestSnake mode, there is always only one snake
     if (!this.game.genetic.population[0].isAlive) {
       // this.canvasRenderer.drawSnakes();
-      // TODO: zrobic aby snake sie robil szary po smierci
+      // TODO?: zrobic aby snake sie robil szary po smierci
       // nie robi sie bo brakuje tej klatki w ktorym jest dead
       return;
     }

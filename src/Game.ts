@@ -17,6 +17,7 @@ export class Game {
   public bestSnake: Snake | null = null;
   public foods: Food[] = [];
   private onNextGeneration: () => void;
+  public currentGeneration: number = 0;
 
   // zrobic obiekt i przekazac jako obiekt propsy do population
   constructor({ boardSize, snakeMaxMoves, geneticProps, onNextGeneration }: GameConstructor) {
@@ -151,6 +152,7 @@ export class Game {
       const isAnySnakeAlive = this.genetic.population.some((snake) => snake.isAlive);
 
       if (!isAnySnakeAlive) {
+        this.currentGeneration++;
         this.evolveToNextGeneration();
         return;
       }

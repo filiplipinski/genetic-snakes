@@ -1,86 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>AI Snakes</title>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu&amp;subset=latin-ext"
-   >
-</head>
-<body>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Ubuntu&amp;subset=latin-ext"
+    />
+  </head>
+  <body>
     <section>
-        <label for="population-size">Population size</label>
-        <input
-            id="population-size"
-            type="number"
-            value="100"
-            min="9"
-            max="625"
-            step="10"
-        />
-        <div class="rates-wrapper">
-            <div>
-            <label for="crossover-rate">Crossover rate (%)</label>
-            <input
-                id="crossover-rate"
-                type="number"
-                value="80" 
-                min="0"
-                max="100"
-            />
-            </div>
-            
-             <div>       
-            <label for="mutation-rate">Mutation rate (%)</label>
-            <input
-                id="mutation-rate"
-                type="number"
-                value="5"
-                min="0"
-                max="100"
-            />
-            </div>
+      <label for="population-size">Population size</label>
+      <input id="population-size" type="number" value="100" min="9" max="625" step="10" />
+      <div class="rates-wrapper">
+        <div>
+          <label for="crossover-rate">Crossover rate (%)</label>
+          <input id="crossover-rate" type="number" value="80" min="0" max="100" />
         </div>
-        <label for="board-size">Board size</label>
-        <input
-            id="board-size"
-            type="number"
-            value="10"
-            min="5"
-            max="50"
-        />
-        <label for="max-moves">Moves without food</label>
-        <input
-            id="max-moves"
-            type="number"
-            value="100"
-            min="10"
-            max="3000"
-            step="10"
-        />
-        <label for="frame-speed">Frame rate</label>
-        <input
-            id="frame-speed"
-            type="range"
-            value="60"
-            min="1"
-            max="60"
-        />
 
-        <div class="buttons-wrapper">
-            <button id="start">Start</button>
-            <button id="stop" disabled>Stop</button>
+        <div>
+          <label for="mutation-rate">Mutation rate (%)</label>
+          <input id="mutation-rate" type="number" value="5" min="0" max="100" />
         </div>
-        <button id="best-snake" disabled>Best snake</button>
+      </div>
+      <label for="board-size">Board size</label>
+      <input id="board-size" type="number" value="10" min="5" max="50" />
+      <label for="max-moves">Moves without food</label>
+      <input id="max-moves" type="number" value="100" min="10" max="3000" step="10" />
+      <label for="frame-speed">Frame rate</label>
+      <input id="frame-speed" type="range" value="60" min="1" max="60" />
+
+      <div class="buttons-wrapper">
+        <button id="start">Start</button>
+        <button id="stop" disabled>Stop</button>
+      </div>
+      <button id="best-snake" disabled>Best snake</button>
+
+      <div class="speed-mode-wrapper">
+        <h3>Speed mode without simulation:</h3>
+        <label for="speed-mode">Generations</label>
+        <div class="speed-mode-btn-input-container">
+          <input id="speed-mode" type="number" value="500" min="1" max="1000" />
+          <button id="speed-mode-btn" class="speed-mode-btn">Speed mode</button>
+        </div>
+      </div>
     </section>
     <main>
-        <canvas width="0" height="0"></canvas>
+      <canvas width="0" height="0"></canvas>
     </main>
 
     <section class="logs-wrapper">
-        <p class="title">Logs:</p>
-        <div class="logs-container">
-        </div>
+      <p class="title">Logs:</p>
+      <div class="logs-container"></div>
     </section>
-</body>
+  </body>
 </html>

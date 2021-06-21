@@ -1,5 +1,6 @@
 import { Game } from "./Game";
 import { CanvasRenderer } from "./CanvasRenderer";
+import { generateCsv } from "./utils/csvExporter";
 import "./styles/index.css";
 
 const getInputValue = (id: string): number => {
@@ -26,6 +27,7 @@ class Main {
   private readonly stopBtnElement: HTMLButtonElement;
   private readonly bestSnakeElement: HTMLButtonElement;
   private readonly speedModeElement: HTMLButtonElement;
+  private readonly saveToCsvElement: HTMLButtonElement;
 
   private isGameRunning = false;
   private game: Game;
@@ -39,6 +41,7 @@ class Main {
     this.stopBtnElement = document.querySelector("button#stop");
     this.bestSnakeElement = document.querySelector("button#best-snake");
     this.speedModeElement = document.querySelector("button#speed-mode-btn");
+    this.saveToCsvElement = document.querySelector("button#save-to-csv");
 
     this.bindListeners();
   }
@@ -48,6 +51,7 @@ class Main {
     this.stopBtnElement.addEventListener("click", () => this.stop());
     this.bestSnakeElement.addEventListener("click", () => this.showBestSnake());
     this.speedModeElement.addEventListener("click", () => this.runSpeedMode());
+    this.saveToCsvElement.addEventListener("click", () => this.saveToCsv());
 
     document.querySelector("#frame-speed").addEventListener("input", (e) => {
       this.frameSpeed = parseInt((e.target as HTMLInputElement).value);
@@ -204,8 +208,13 @@ class Main {
     );
   }
 
+  private saveToCsv() {
+    const title = `Population size: ${this.populationSize}. Crossover rate: ${this.crossoverRate}. Mutation rate: ${this.mutationRate}`;
+    generateCsv(this.logs, title);
+  }
+
   private renderLogs() {
-    const logsContainerElement = document.querySelector(".logs-container");
+    const logsContainerElement = document.querySelector(".logs__logs-container");
     logsContainerElement.innerHTML = "";
 
     [...this.logs].reverse().forEach((l) => {

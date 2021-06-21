@@ -106,26 +106,38 @@ button:disabled {
   margin-right: 15px;
 }
 
-.logs-wrapper {
+.logs {
   padding: 10px;
 }
 
-.logs-wrapper .logs-container {
+.logs .logs__logs-container {
   overflow-y: scroll;
 }
 
-.logs-wrapper p {
+.logs .logs__title-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid black;
+}
+
+.logs .logs__title-wrapper button {
+  font-size: 12px;
+  margin: 0;
+  padding: 6px 6px;
+}
+
+.logs p {
   margin: 0;
   margin-bottom: 5px;
   font-size: 12px;
   line-height: 12px;
 }
 
-.logs-wrapper .title {
+.logs .logs__title {
   font-size: 20px;
   font-weight: bold;
-  padding-bottom: 15px;
-  border-bottom: 1px solid black;
 }
 
 .speed-mode-wrapper {

@@ -1,5 +1,5 @@
 import { Game } from "./Game";
-import { CanvasRenderer } from "./CanvasRenderer";
+import { GameRenderer } from "./GameRenderer";
 import { ChartRenderer } from "./ChartRenderer";
 import { generateCsv } from "./utils/csvExporter";
 import { LogData } from "./types";
@@ -21,7 +21,7 @@ export class Main {
 
   private isGameRunning = false;
   private game: Game;
-  private canvasRenderer: CanvasRenderer;
+  private gameRenderer: GameRenderer;
   private chartRenderer: ChartRenderer;
   public logs: LogData[] = [];
   private speedModeIntervalId: NodeJS.Timeout;
@@ -124,7 +124,7 @@ export class Main {
     }
 
     this.setCanvasSize();
-    this.canvasRenderer = new CanvasRenderer(this.game, this.gameCanvasElement);
+    this.gameRenderer = new GameRenderer(this.game, this.gameCanvasElement);
     this.runLoop();
   }
 
@@ -147,7 +147,7 @@ export class Main {
     this.stop();
     this.game.prepareGameForBestSnake();
     this.setCanvasSize(0.5);
-    this.canvasRenderer = new CanvasRenderer(this.game, this.gameCanvasElement); // reinitialize grid size which depends on genetic populationSize
+    this.gameRenderer = new GameRenderer(this.game, this.gameCanvasElement); // reinitialize grid size which depends on genetic populationSize
     this.runLoopForBestSnake();
   }
 
@@ -158,9 +158,9 @@ export class Main {
     if (this.game.bestSnake) {
       this.bestSnakeElement.disabled = false;
     }
-    this.canvasRenderer.drawGrid();
-    this.canvasRenderer.drawSnakes();
-    this.canvasRenderer.drawFoods();
+    this.gameRenderer.drawGrid();
+    this.gameRenderer.drawSnakes();
+    this.gameRenderer.drawFoods();
 
     this.game.runStep({ shouldEvolve: true });
 
@@ -190,15 +190,15 @@ export class Main {
   private runLoopForBestSnake() {
     // forBestSnake mode, there is always only one snake
     if (!this.game.genetic.population[0].isAlive) {
-      // this.canvasRenderer.drawSnakes();
+      // this.gameRenderer.drawSnakes();
       // TODO?: zrobic aby snake sie robil szary po smierci
       // nie robi sie bo brakuje tej klatki w ktorym jest dead
       return;
     }
 
-    this.canvasRenderer.drawGrid();
-    this.canvasRenderer.drawSnakes();
-    this.canvasRenderer.drawFoods();
+    this.gameRenderer.drawGrid();
+    this.gameRenderer.drawSnakes();
+    this.gameRenderer.drawFoods();
 
     this.game.runStep({ shouldEvolve: false });
 

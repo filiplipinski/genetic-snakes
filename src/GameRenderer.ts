@@ -5,7 +5,7 @@ type Screen = {
   height: number;
 };
 
-export class CanvasRenderer {
+export class GameRenderer {
   private readonly game: Game;
   private readonly ctx: CanvasRenderingContext2D;
   private readonly screen: Screen;

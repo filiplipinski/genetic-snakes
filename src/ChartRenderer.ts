@@ -2,14 +2,14 @@ import { Chart, registerables } from "chart.js";
 import { lineChartOptions, initialChartData } from "./ChartRenderer.utils";
 import { LogData } from "./types";
 
+const CHART_CANVAS_SELECTOR = ".mid-section__chart__canvas";
+
 export class ChartRenderer {
   private readonly ctx: CanvasRenderingContext2D;
   private chart: Chart;
 
   constructor() {
-    const canvasElement = document.querySelector<HTMLCanvasElement | null>(
-      ".mid-section__chart__canvas"
-    );
+    const canvasElement = document.querySelector<HTMLCanvasElement | null>(CHART_CANVAS_SELECTOR);
     if (!canvasElement) {
       throw new Error("Chart canvas not found");
     }

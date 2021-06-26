@@ -10,10 +10,10 @@
     />
   </head>
   <body>
-    <section>
+    <section class="left-section">
       <label for="population-size">Population size</label>
       <input id="population-size" type="number" value="100" min="9" max="625" step="10" />
-      <div class="rates-wrapper">
+      <div class="left-section__rates">
         <div>
           <label for="crossover-rate">Crossover rate (%)</label>
           <input id="crossover-rate" type="number" value="80" min="0" max="100" />
@@ -31,39 +31,39 @@
       <label for="frame-speed">Frame rate</label>
       <input id="frame-speed" type="range" value="60" min="1" max="60" />
 
-      <div class="buttons-wrapper">
+      <div class="left-section__buttons">
         <button id="start">Start</button>
         <button id="stop" disabled>Stop</button>
       </div>
       <button id="best-snake" disabled>Best snake</button>
 
-      <div class="speed-mode-wrapper">
+      <div class="left-section__speed-mode">
         <h3>Speed mode without simulation:</h3>
         <label for="speed-mode">Generations</label>
-        <div class="speed-mode-btn-input-container">
+        <div class="left-section__speed-mode__input-btn-wrapper">
           <input id="speed-mode" type="number" value="500" min="1" max="1000" />
-          <button id="speed-mode-btn" class="speed-mode-btn">Speed mode</button>
+          <button id="speed-mode-btn">Speed mode</button>
         </div>
       </div>
     </section>
 
-    <div class="main-wrapper">
-      <main>
-        <canvas id="game__canvas" width="0" height="0"></canvas>
+    <div class="mid-section">
+      <main class="mid-section__game">
+        <canvas class="mid-section__game__canvas" width="0" height="0"></canvas>
       </main>
 
-      <div class="chart">
-        <button class="chart__button">Full screen &#8691;</button>
-        <canvas id="chart__canvas" class="chart__canvas"></canvas>
+      <div class="mid-section__chart">
+        <button class="mid-section__chart__btn">Full screen &#8691;</button>
+        <canvas class="mid-section__chart__canvas"></canvas>
       </div>
     </div>
 
-    <section class="logs">
-      <div class="logs__title-wrapper">
-        <p class="logs__title">Logs:</p>
-        <button id="save-to-csv">save to CSV</button>
+    <section class="right-section">
+      <div class="right-section__logs">
+        <h3 class="right-section__logs__title">Logs:</h3>
+        <button class="right-section__logs__btn" id="save-to-csv">save to CSV</button>
       </div>
-      <div class="logs__logs-container"></div>
+      <div class="right-section__logs__body"></div>
     </section>
   </body>
 </html>

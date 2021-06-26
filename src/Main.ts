@@ -14,7 +14,7 @@ export class Main {
   private frameSpeed: number;
   private speedModeGenerations: number;
 
-  private readonly canvasElement: HTMLCanvasElement;
+  private readonly gameCanvasElement: HTMLCanvasElement;
   private readonly startBtnElement: HTMLButtonElement;
   private readonly stopBtnElement: HTMLButtonElement;
   private readonly bestSnakeElement: HTMLButtonElement;
@@ -27,11 +27,10 @@ export class Main {
   private speedModeIntervalId: NodeJS.Timeout;
 
   constructor() {
-    // TODO: pozmieniaj nazwy canvas na gameCanvas
-    this.canvasElement = document.querySelector("#game__canvas");
-    this.startBtnElement = document.querySelector("button#start");
-    this.stopBtnElement = document.querySelector("button#stop");
-    this.bestSnakeElement = document.querySelector("button#best-snake");
+    this.gameCanvasElement = document.querySelector(".mid-section__game__canvas");
+    this.startBtnElement = document.querySelector("#start");
+    this.stopBtnElement = document.querySelector("#stop");
+    this.bestSnakeElement = document.querySelector("#best-snake");
 
     this.chartRenderer = new ChartRenderer();
     this.bindListeners();
@@ -45,14 +44,14 @@ export class Main {
     document.querySelector("#frame-speed").addEventListener("input", (e) => {
       this.frameSpeed = parseInt((e.target as HTMLInputElement).value);
     });
-    document.querySelector("button#speed-mode-btn")?.addEventListener("click", () => {
+    document.querySelector("#speed-mode-btn")?.addEventListener("click", () => {
       this.runSpeedMode();
     });
-    document.querySelector("button#save-to-csv")?.addEventListener("click", () => {
+    document.querySelector("#save-to-csv")?.addEventListener("click", () => {
       this.saveToCsv();
     });
-    document.querySelector("button.chart__button")?.addEventListener("click", () => {
-      document.querySelector(".chart")?.classList.toggle("big");
+    document.querySelector(".chart__button")?.addEventListener("click", () => {
+      document.querySelector(".mid-section__chart")?.classList.toggle("mid-section__chart--big");
     });
   }
 
@@ -69,14 +68,14 @@ export class Main {
   private setCanvasSize(scale: number = 0.95) {
     // 90% of browser height is snake game, rest is margin
     const size = document.querySelector("main").clientHeight * scale;
-    this.canvasElement.width = size;
-    this.canvasElement.height = size;
+    this.gameCanvasElement.width = size;
+    this.gameCanvasElement.height = size;
   }
 
   private resetCanvas() {
     // reset canvas to initial state
-    this.canvasElement.width = 0;
-    this.canvasElement.height = 0;
+    this.gameCanvasElement.width = 0;
+    this.gameCanvasElement.height = 0;
   }
 
   private start(mode: "normal" | "speed") {
@@ -125,7 +124,7 @@ export class Main {
     }
 
     this.setCanvasSize();
-    this.canvasRenderer = new CanvasRenderer(this.game, this.canvasElement);
+    this.canvasRenderer = new CanvasRenderer(this.game, this.gameCanvasElement);
     this.runLoop();
   }
 
@@ -148,7 +147,7 @@ export class Main {
     this.stop();
     this.game.prepareGameForBestSnake();
     this.setCanvasSize(0.5);
-    this.canvasRenderer = new CanvasRenderer(this.game, this.canvasElement); // reinitialize grid size which depends on genetic populationSize
+    this.canvasRenderer = new CanvasRenderer(this.game, this.gameCanvasElement); // reinitialize grid size which depends on genetic populationSize
     this.runLoopForBestSnake();
   }
 
@@ -215,7 +214,7 @@ export class Main {
   }
 
   private renderLogs() {
-    const logsContainerElement = document.querySelector(".logs__logs-container");
+    const logsContainerElement = document.querySelector(".right-section__logs__body");
     logsContainerElement.innerHTML = "";
 
     [...this.logs].reverse().forEach((l) => {

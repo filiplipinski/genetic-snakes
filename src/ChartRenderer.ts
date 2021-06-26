@@ -7,7 +7,9 @@ export class ChartRenderer {
   private chart: Chart;
 
   constructor() {
-    const canvasElement = document.querySelector<HTMLCanvasElement | null>("#chart__canvas");
+    const canvasElement = document.querySelector<HTMLCanvasElement | null>(
+      ".mid-section__chart__canvas"
+    );
     if (!canvasElement) {
       throw new Error("Chart canvas not found");
     }

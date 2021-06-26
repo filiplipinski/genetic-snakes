@@ -1,21 +1,5 @@
-#game__canvas {
-  box-shadow: 0 0 5px #eee;
-  margin: 15px;
-}
-
-html {
-  height: 100%;
-  font-family: "Ubuntu", Arial, san-serif;
-}
-
-body {
-  margin: 0;
-  height: 100%;
-  display: flex;
-  background-color: #263445;
-}
-
-section {
+/* LEFT SECTION (OPTIONS TAB) */
+.left-section {
   display: flex;
   flex-direction: column;
   flex: 1 0 250px;
@@ -23,7 +7,51 @@ section {
   background-color: #eee;
 }
 
-.main-wrapper {
+.left-section .left-section__rates {
+  display: flex;
+}
+.left-section .left-section__rates div {
+  flex-basis: 50%;
+}
+
+.left-section .left-section__rates div:nth-child(1) {
+  margin-right: 15px;
+}
+
+.left-section .left-section__rates div input {
+  width: 86%;
+}
+
+.left-section .left-section__buttons {
+  display: flex;
+}
+.left-section .left-section__buttons button {
+  width: 100%;
+}
+
+.left-section .left-section__buttons button:nth-child(1) {
+  margin-right: 15px;
+}
+
+.left-section .left-section__speed-mode {
+  margin-top: 32px;
+}
+.left-section .left-section__speed-mode label {
+  font-size: 16px;
+}
+.left-section .left-section__speed-mode__input-btn-wrapper {
+  display: flex;
+  align-items: flex-start;
+}
+.left-section .left-section__speed-mode__input-btn-wrapper input {
+  margin-right: 16px;
+}
+.left-section .left-section__speed-mode__input-btn-wrapper button {
+  width: 100%;
+}
+
+/* MID SECTION (GAME+CHART) */
+.mid-section {
   flex: 1 1 100%;
   display: flex;
   flex-direction: column;
@@ -31,142 +59,19 @@ section {
   position: relative;
 }
 
-main {
+.mid-section__game {
   display: flex;
   flex: 1 1 100%;
   max-height: 75vh;
   align-items: center;
   justify-content: center;
 }
-
-label {
-  font-weight: bold;
-  font-size: 16px;
+.mid-section__game__canvas {
+  box-shadow: 0 0 5px #eee;
+  margin: 15px;
 }
 
-input {
-  font-family: "Ubuntu", Arial, san-serif;
-  font-size: 16px;
-  margin: 4px 0 24px;
-  border: none;
-  border-radius: 5px;
-  padding: 8px;
-  background-color: #fff;
-}
-
-input:focus {
-  box-shadow: 0px 0px 1px 1px #0075ff;
-  outline: none;
-}
-
-input[type="range"] {
-  padding: 0;
-}
-
-button {
-  font-family: "Ubuntu", Arial, san-serif;
-  font-size: 18px;
-  font-weight: bold;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  margin-top: 8px;
-  padding: 8px 12px;
-  background-color: #0075ff;
-  box-shadow: 0 5px 20px #bbb;
-  cursor: pointer;
-  outline: none;
-}
-
-button:hover:not([disabled]),
-button:active {
-  background-color: #00489b;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: default;
-}
-
-.rates-wrapper {
-  display: flex;
-}
-.rates-wrapper div {
-  flex-basis: 50%;
-}
-
-.rates-wrapper div:nth-child(1) {
-  margin-right: 15px;
-}
-
-.rates-wrapper div input {
-  width: 86%;
-}
-
-.buttons-wrapper {
-  display: flex;
-}
-.buttons-wrapper button {
-  width: 100%;
-}
-
-.buttons-wrapper button:nth-child(1) {
-  margin-right: 15px;
-}
-
-.logs {
-  padding: 10px;
-}
-
-.logs .logs__logs-container {
-  overflow-y: scroll;
-  margin-top: 4px;
-}
-
-.logs .logs__title-wrapper {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 10px;
-  border-bottom: 1px solid black;
-}
-
-.logs .logs__title-wrapper button {
-  font-size: 12px;
-  margin: 0;
-  padding: 6px 6px;
-}
-
-.logs p {
-  margin: 0;
-  margin-bottom: 5px;
-  font-size: 12px;
-  line-height: 12px;
-}
-
-.logs .logs__title {
-  font-size: 20px;
-  font-weight: bold;
-}
-
-.speed-mode-wrapper {
-  margin-top: 32px;
-}
-.speed-mode-wrapper label {
-  font-size: 16px;
-}
-.speed-mode-btn-input-container {
-  display: flex;
-  align-items: flex-start;
-}
-.speed-mode-btn-input-container input {
-  margin-right: 16px;
-}
-.speed-mode-btn-input-container button {
-  width: 100%;
-}
-
-.chart {
+.mid-section__chart {
   padding: 5px 10px;
   background-color: #eee;
   box-shadow: inset 0 0 5px 0px black;
@@ -179,8 +84,11 @@ button:disabled {
 
   transition: 0.2s;
 }
+.mid-section__chart--big {
+  top: 0;
+}
 
-.chart .chart__button {
+.mid-section__chart .mid-section__chart__btn {
   position: absolute;
   left: 10px;
   bottom: 10px;
@@ -188,11 +96,48 @@ button:disabled {
   padding: 6px 8px;
 }
 
-.chart.big {
-  top: 0;
-}
-
-.chart .chart__canvas {
+.mid-section__chart .mid-section__chart__canvas {
   width: 100%;
   padding-bottom: 20px;
+}
+
+/* RIGHT SECTION (LOGS TAB) */
+.right-section {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 250px;
+  padding: 10px;
+  background-color: #eee;
+}
+
+.right-section .right-section__logs__body {
+  overflow-y: scroll;
+  margin-top: 4px;
+}
+
+.right-section .right-section__logs {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid black;
+}
+
+.right-section .right-section__logs .right-section__logs__btn {
+  font-size: 12px;
+  margin: 0;
+  padding: 6px 6px;
+}
+
+.right-section .right-section__logs__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.right-section p {
+  margin: 0;
+  margin-bottom: 5px;
+  font-size: 12px;
+  line-height: 12px;
 }

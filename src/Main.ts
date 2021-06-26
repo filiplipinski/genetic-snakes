@@ -50,8 +50,11 @@ export class Main {
     document.querySelector("#save-to-csv")?.addEventListener("click", () => {
       this.saveToCsv();
     });
-    document.querySelector(".mid-section__chart__btn")?.addEventListener("click", () => {
+    document.querySelector(".mid-section__chart__fullscreen-btn")?.addEventListener("click", () => {
       document.querySelector(".mid-section__chart")?.classList.toggle("mid-section__chart--big");
+    });
+    document.querySelector(".mid-section__chart__save-btn")?.addEventListener("click", () => {
+      this.chartRenderer.downloadChart();
     });
   }
 

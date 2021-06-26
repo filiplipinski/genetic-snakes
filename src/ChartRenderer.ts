@@ -39,4 +39,12 @@ export class ChartRenderer {
 
     this.chart.update();
   }
+
+  downloadChart() {
+    const a = document.createElement("a");
+    a.href = this.chart.toBase64Image();
+    a.download = "genetic_snakes_chart.png";
+
+    a.click();
+  }
 }

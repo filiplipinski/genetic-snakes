@@ -92,9 +92,17 @@
       top: 0;
     }
 
-    &__btn {
+    &__fullscreen-btn {
       position: absolute;
       left: 10px;
+      bottom: 10px;
+      font-size: 16px;
+      padding: 6px 8px;
+    }
+
+    &__save-btn {
+      position: absolute;
+      right: 10px;
       bottom: 10px;
       font-size: 16px;
       padding: 6px 8px;

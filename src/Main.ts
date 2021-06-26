@@ -18,8 +18,6 @@ export class Main {
   private readonly startBtnElement: HTMLButtonElement;
   private readonly stopBtnElement: HTMLButtonElement;
   private readonly bestSnakeElement: HTMLButtonElement;
-  private readonly speedModeElement: HTMLButtonElement;
-  private readonly saveToCsvElement: HTMLButtonElement;
 
   private isGameRunning = false;
   private game: Game;
@@ -34,8 +32,6 @@ export class Main {
     this.startBtnElement = document.querySelector("button#start");
     this.stopBtnElement = document.querySelector("button#stop");
     this.bestSnakeElement = document.querySelector("button#best-snake");
-    this.speedModeElement = document.querySelector("button#speed-mode-btn");
-    this.saveToCsvElement = document.querySelector("button#save-to-csv");
 
     this.chartRenderer = new ChartRenderer();
     this.bindListeners();
@@ -45,11 +41,18 @@ export class Main {
     this.startBtnElement.addEventListener("click", () => this.start("normal"));
     this.stopBtnElement.addEventListener("click", () => this.stop());
     this.bestSnakeElement.addEventListener("click", () => this.showBestSnake());
-    this.speedModeElement.addEventListener("click", () => this.runSpeedMode());
-    this.saveToCsvElement.addEventListener("click", () => this.saveToCsv());
 
     document.querySelector("#frame-speed").addEventListener("input", (e) => {
       this.frameSpeed = parseInt((e.target as HTMLInputElement).value);
+    });
+    document.querySelector("button#speed-mode-btn")?.addEventListener("click", () => {
+      this.runSpeedMode();
+    });
+    document.querySelector("button#save-to-csv")?.addEventListener("click", () => {
+      this.saveToCsv();
+    });
+    document.querySelector("button.chart__button")?.addEventListener("click", () => {
+      document.querySelector(".chart")?.classList.toggle("big");
     });
   }
 
@@ -63,7 +66,7 @@ export class Main {
     this.speedModeGenerations = getInputValue("#speed-mode");
   }
 
-  private setCanvasSize(scale: number = 0.9) {
+  private setCanvasSize(scale: number = 0.95) {
     // 90% of browser height is snake game, rest is margin
     const size = document.querySelector("main").clientHeight * scale;
     this.canvasElement.width = size;
@@ -85,6 +88,7 @@ export class Main {
     this.stopBtnElement.disabled = false;
     this.bestSnakeElement.disabled = false;
     this.getInputValues();
+    this.chartRenderer.prepareChart();
 
     this.game = new Game({
       boardSize: this.boardSize,
@@ -115,7 +119,6 @@ export class Main {
       },
     });
     this.isGameRunning = true;
-    this.chartRenderer.prepareChart();
 
     if (mode === "speed") {
       return;

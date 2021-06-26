@@ -23,10 +23,11 @@ export class ChartRenderer {
   }
 
   prepareChart() {
-    this.chart.reset();
     this.chart.data.labels = [];
     this.chart.data.datasets[0].data = [];
     this.chart.data.datasets[1].data = [];
+
+    this.chart.update();
   }
 
   updateChart(log: LogData) {

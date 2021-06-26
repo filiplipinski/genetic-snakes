@@ -47,4 +47,5 @@ export const lineChartOptions: ChartConfiguration<"line", number[], string>["opt
       suggestedMax: 10,
     },
   },
+  maintainAspectRatio: false,
 };

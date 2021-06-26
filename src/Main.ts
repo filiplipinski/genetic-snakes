@@ -50,7 +50,7 @@ export class Main {
     document.querySelector("#save-to-csv")?.addEventListener("click", () => {
       this.saveToCsv();
     });
-    document.querySelector(".chart__button")?.addEventListener("click", () => {
+    document.querySelector(".mid-section__chart__btn")?.addEventListener("click", () => {
       document.querySelector(".mid-section__chart")?.classList.toggle("mid-section__chart--big");
     });
   }
@@ -67,7 +67,7 @@ export class Main {
 
   private setCanvasSize(scale: number = 0.95) {
     // 90% of browser height is snake game, rest is margin
-    const size = document.querySelector("main").clientHeight * scale;
+    const size = document.querySelector(".mid-section__game").clientHeight * scale;
     this.gameCanvasElement.width = size;
     this.gameCanvasElement.height = size;
   }

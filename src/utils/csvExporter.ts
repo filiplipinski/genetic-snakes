@@ -10,7 +10,7 @@ const baseOptions = {
   title: "Genetic Snakes logs",
   useBom: true,
   useKeysAsHeaders: true,
-  //   headers: ["Column 1", "Column 2"], // <-- Won't work with useKeysAsHeaders present!
+  //   headers: ["Column 1", "Column 2"], // <-- Won't work with useKeysAsHeaders present
 };
 
 export const generateCsv = (data: unknown[], title: string) => {

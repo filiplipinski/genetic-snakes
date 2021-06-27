@@ -202,7 +202,7 @@ export class Game {
     return Math.max(...this.genetic.population.map((snake) => snake.score));
   }
 
-  public getMediumScore(): number {
+  public getAvgScore(): number {
     const sum = this.genetic.population.reduce((acc, curr) => {
       return acc + curr.score;
     }, 0);

@@ -32,10 +32,20 @@ export class ChartRenderer {
     this.chart.update();
   }
 
-  updateChart(log: LogData) {
-    this.chart.data.labels.push(log.generation);
-    this.chart.data.datasets[0].data.push(log.bestScore);
-    this.chart.data.datasets[1].data.push(log.mediumScore);
+  updateChart(log: LogData | LogData[]) {
+    if (Array.isArray(log)) {
+      const newLabels = log.map(({ generation }) => generation);
+      const newDataset1 = log.map(({ bestScore }) => bestScore);
+      const newDataset2 = log.map(({ avgScore }) => avgScore);
+
+      this.chart.data.labels = newLabels;
+      this.chart.data.datasets[0].data = newDataset1;
+      this.chart.data.datasets[1].data = newDataset2;
+    } else {
+      this.chart.data.labels.push(log.generation);
+      this.chart.data.datasets[0].data.push(log.bestScore);
+      this.chart.data.datasets[1].data.push(log.avgScore);
+    }
 
     this.chart.update();
   }

@@ -23,7 +23,7 @@ export class Main {
   private game: Game;
   private gameRenderer: GameRenderer;
   private chartRenderer: ChartRenderer;
-  public logs: LogData[] = [];
+  private logs: LogData[] = [];
   private speedModeIntervalId: NodeJS.Timeout;
 
   constructor() {
@@ -104,19 +104,18 @@ export class Main {
         const log = {
           generation: this.game.genetic.generation,
           bestScore: this.game.getBestScore(),
-          mediumScore: this.game.getMediumScore(),
+          avgScore: this.game.getAvgScore(),
         };
         this.logs.push(log);
         this.renderLogs();
-        this.chartRenderer.updateChart(log);
 
-        if (mode !== "speed") {
-          return;
-        }
-
-        if (this.game.genetic.generation >= this.speedModeGenerations) {
-          this.stop();
-          return;
+        if (mode === "speed") {
+          if (this.game.genetic.generation >= this.speedModeGenerations) {
+            this.chartRenderer.updateChart(this.logs);
+            this.stop();
+          }
+        } else {
+          this.chartRenderer.updateChart(log);
         }
       },
     });
@@ -225,7 +224,7 @@ export class Main {
 
       const logString = `• gen. ${l.generation}, best score: ${
         l.bestScore
-      }, avg. score: ${l.mediumScore.toFixed(2)}`;
+      }, avg. score: ${l.avgScore.toFixed(2)}`;
 
       p.textContent = logString;
       logsContainerElement.appendChild(p);

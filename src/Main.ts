@@ -111,7 +111,6 @@ export class Main {
 
         if (mode === "speed") {
           if (this.game.genetic.generation >= this.speedModeGenerations) {
-            this.chartRenderer.updateChart(this.logs);
             this.stop();
           }
         } else {
@@ -134,6 +133,7 @@ export class Main {
     this.isGameRunning = false;
     this.startBtnElement.disabled = false;
     this.stopBtnElement.disabled = true;
+    this.chartRenderer.updateChart(this.logs);
 
     clearInterval(this.speedModeIntervalId);
   }

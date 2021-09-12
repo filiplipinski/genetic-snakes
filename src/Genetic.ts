@@ -1,6 +1,5 @@
 import { Snake } from "./Snake";
 import { randomGaussian } from "./utils";
-import { rouletteSelection } from "./Genetic.utils";
 
 export type GeneticConstructor = {
   populationSize: number;
@@ -13,6 +12,7 @@ export class Genetic {
   public generation: number;
   public populationSize: number;
   public population: Snake[] = []; // fitness value is the score of individual
+  private selectionPool: Snake[] = [];
 
   private readonly mutationRate: number;
   private readonly crossoverRate: number;
@@ -37,99 +37,134 @@ export class Genetic {
   }
 
   updateGeneration() {
-    this.selection();
-    this.crossoverController();
-    this.mutateController();
+    this.calculateFitness();
+    this.updateSelectionPool();
 
+    const newPopulation: Snake[] = [];
+
+    for (let i = 0; i < this.population.length; i++) {
+      const [parent1, parent2] = this.selectParents();
+
+      const child = this.crossover(parent1, parent2);
+      const mutatedChild = this.mutate(child);
+
+      newPopulation.push(mutatedChild);
+    }
+
+    this.population = newPopulation;
     this.generation += 1;
   }
 
-  selection() {
-    const sumOfScores = this.population.reduce((acc, curr) => {
-      return acc + curr.score;
+  calculateFitness() {
+    this.population.forEach((snake) => snake.calculateFitness());
+  }
+
+  updateSelectionPool() {
+    // it build roulette wheel
+    const sumOfFitness = this.population.reduce((acc, curr) => {
+      return acc + curr.fitness;
     }, 0);
 
-    if (sumOfScores === 0) {
-      this.initialize();
-      return;
-    }
+    this.selectionPool = [];
 
-    const newPopulation = rouletteSelection(this.population, this.createNewSnake);
+    for (let snake of this.population) {
+      const participation = Math.floor((snake.fitness / sumOfFitness) * 1000);
 
-    this.population = newPopulation;
-  }
+      for (let i = 0; i < participation; i++) {
+        const copySnake = this.createNewSnake();
+        copySnake.brain = snake.brain;
+        copySnake.fitness = snake.fitness;
+        copySnake.score = snake.score;
 
-  crossoverController() {
-    for (let i = 0; i < this.population.length; i += 2) {
-      if (Math.random() < this.crossoverRate) {
-        const nextIndex = (i + 1) % this.population.length;
-
-        const [offspring, offspring2] = this.crossover(
-          this.population[i],
-          this.population[nextIndex]
-        );
-
-        this.population[i] = offspring;
-        this.population[nextIndex] = offspring2;
+        this.selectionPool.push(copySnake);
       }
     }
+
+    if (this.selectionPool.length === 0) {
+      // if no snake added to selectionPool (cause all of them has bad scores,
+      // and they rate for 0 participation) then reinitialize weights and copy
+      // population to pool
+      this.initialize();
+      this.selectionPool = [...this.population];
+    }
   }
 
-  crossover(a: Snake, b: Snake): [Snake, Snake] {
+  selectParents() {
+    // selekcja kolem ruletki
+    const aIndex = Math.floor(Math.random() * this.selectionPool.length);
+    const bIndex = Math.floor(Math.random() * this.selectionPool.length);
+    const parent1 = this.selectionPool[aIndex];
+    const parent2 = this.selectionPool[bIndex];
+
+    return [parent1, parent2];
+  }
+
+  crossover(a: Snake, b: Snake): Snake {
+    if (Math.random() >= this.crossoverRate) {
+      return a;
+    }
     // best results are achieved by a crossover probability of between 0.65 and 0.85
     const offspring = this.createNewSnake();
-    const offspring2 = this.createNewSnake();
 
-    for (let i = 0; i < offspring.brain.length; i++) {
-      // Weights
-      for (let j = 0; j < offspring.brain[i].weights.length; j++) {
-        const cutIndex = Math.floor(Math.random() * offspring.brain[i].weights[j].length);
+    // Weights
+    for (let i = 0; i < offspring.brain.layers.length; i++) {
+      for (let j = 0; j < offspring.brain.layers[i].weights.length; j++) {
+        const cutIndex = Math.floor(Math.random() * offspring.brain.layers[i].weights[j].length);
 
-        for (let k = 0; k < offspring.brain[i].weights[j].length; k++) {
-          offspring.brain[i].weights[j][k] =
-            cutIndex < k ? a.brain[i].weights[j][k] : b.brain[i].weights[j][k];
-
-          offspring2.brain[i].weights[j][k] =
-            cutIndex >= k ? a.brain[i].weights[j][k] : b.brain[i].weights[j][k];
-        }
-      }
-
-      // Biases
-      for (let i = 0; i < offspring.brain.length; i++) {
-        const cutIndex = Math.floor(Math.random() * offspring.brain[i].biases.length);
-        for (let j = 0; j < offspring.brain[i].biases[j]; j++) {
-          offspring.brain[i].biases[j] = cutIndex < j ? a.brain[i].biases[j] : b.brain[i].biases[j];
-
-          offspring2.brain[i].biases[j] =
-            cutIndex >= j ? a.brain[i].biases[j] : b.brain[i].biases[j];
+        for (let k = 0; k < offspring.brain.layers[i].weights[j].length; k++) {
+          offspring.brain.layers[i].weights[j][k] =
+            cutIndex < k ? a.brain.layers[i].weights[j][k] : b.brain.layers[i].weights[j][k];
         }
       }
     }
 
-    return [offspring, offspring2];
-  }
+    // Biases
+    for (let i = 0; i < offspring.brain.layers.length; i++) {
+      const cutIndex = Math.floor(Math.random() * offspring.brain.layers[i].biases.length);
 
-  mutateController() {
-    for (let i = 0; i < this.population.length; i++) {
-      this.mutate(this.population[i]);
+      for (let j = 0; j < offspring.brain.layers[i].biases.length; j++) {
+        offspring.brain.layers[i].biases[j] =
+          cutIndex < j ? a.brain.layers[i].biases[j] : b.brain.layers[i].biases[j];
+      }
     }
+
+    return offspring;
   }
 
-  mutate(individual: Snake) {
-    for (let layer of individual.brain) {
-      for (let row = 0; row < layer.weights.length; row++) {
-        for (let col = 0; col < layer.weights[row].length; col++) {
+  mutate(snake: Snake): Snake {
+    const offspring = this.createNewSnake();
+    offspring.brain = snake.brain;
+
+    for (let i = 0; i < offspring.brain.layers.length; i++) {
+      for (let row = 0; row < offspring.brain.layers[i].weights.length; row++) {
+        for (let col = 0; col < offspring.brain.layers[i].weights[row].length; col++) {
           if (Math.random() < this.mutationRate) {
-            layer.weights[row][col] += randomGaussian();
+            offspring.brain.layers[i].weights[row][col] += randomGaussian() / 8;
+
+            if (offspring.brain.layers[i].weights[row][col] > 1) {
+              offspring.brain.layers[i].weights[row][col] = 1;
+            }
+            if (offspring.brain.layers[i].weights[row][col] < -1) {
+              offspring.brain.layers[i].weights[row][col] = -1;
+            }
           }
         }
       }
 
-      for (let j = 0; j < layer.biases.length; j++) {
+      for (let k = 0; k < offspring.brain.layers[i].biases.length; k++) {
         if (Math.random() < this.mutationRate) {
-          layer.biases[j] += randomGaussian();
+          offspring.brain.layers[i].biases[k] += randomGaussian() / 8;
+
+          if (offspring.brain.layers[i].biases[k] > 1) {
+            offspring.brain.layers[i].biases[k] = 1;
+          }
+          if (offspring.brain.layers[i].biases[k] < -1) {
+            offspring.brain.layers[i].biases[k] = -1;
+          }
         }
       }
     }
+
+    return offspring;
   }
 }

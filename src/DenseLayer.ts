@@ -3,7 +3,7 @@ import { randomGaussian } from "./utils";
 export class DenseLayer {
   numOfInputs: number;
   numOfOutputs: number;
-  weights: number[][];
+  weights: number[][]; // pierwsza array to ilosc neuronow, drugi array to wagi
   biases: number[];
 
   constructor(numOfInputs: number, numOfOutputs: number) {
@@ -13,17 +13,8 @@ export class DenseLayer {
     this.biases = this.initBiases();
   }
 
-  // Relu or sigmoid
-  // sigmoid(number: number) {
-  //   return 1 / (1 + Math.exp(-number));
-  // }
-
-  relu(number: number) {
-    return Math.max(0, number);
-  }
-
-  activate(inputs: number[]): number[] {
-    let result = [];
+  calculate(inputs: number[]): number[] {
+    let result: number[] = [];
 
     for (let i = 0; i < this.numOfOutputs; i++) {
       result[i] = 0;
@@ -33,20 +24,19 @@ export class DenseLayer {
       }
 
       result[i] += this.biases[i];
-      result[i] = this.relu(result[i]);
     }
 
     return result;
   }
 
   initWeights(): number[][] {
-    let weights = [];
+    let weights: number[][] = [];
 
     for (let i = 0; i < this.numOfInputs; i++) {
       weights[i] = [];
 
       for (let j = 0; j < this.numOfOutputs; j++) {
-        weights[i].push(randomGaussian());
+        weights[i].push(randomGaussian() / 4.5);
       }
     }
 
@@ -54,10 +44,10 @@ export class DenseLayer {
   }
 
   initBiases(): number[] {
-    let biases = [];
+    let biases: number[] = [];
 
     for (let i = 0; i < this.numOfOutputs; i++) {
-      biases.push(randomGaussian());
+      biases.push(randomGaussian() / 4.5);
     }
 
     return biases;

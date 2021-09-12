@@ -1,3 +1,5 @@
 export const getInputValue = (id: string): number => {
-  return parseInt(document.querySelector<HTMLInputElement>(id).value);
+  const inputValue = document.querySelector<HTMLInputElement>(id).value.replaceAll(',', '.');
+
+  return Number(inputValue);
 };

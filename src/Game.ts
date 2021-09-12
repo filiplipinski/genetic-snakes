@@ -55,6 +55,11 @@ export class Game {
   public getRandomFoodPosition(snake: Snake): Point {
     const foodPosition = this.getRandomPosition();
 
+    if (snake.score === this.boardSize * this.boardSize) {
+      // Snake który zajął całą plansze
+      return foodPosition;
+    }
+
     for (let partOfSnake of snake.body) {
       // jezeli jedzenie chce sie wyrenderowac w miejscu weza, to wylosuj jeszce raz poprzez rekurencje
       if (foodPosition.isPointInTheSamePosition(partOfSnake)) {
@@ -122,7 +127,7 @@ export class Game {
       isFoodRight ? 1 : 0,
       isFoodDown ? 1 : 0,
       isFoodLeft ? 1 : 0,
-      hasObstacleAbove ? 1 : 0,
+      hasObstacleAbove ? 1 : 0, // TODO: czy nie powinno byc na odwrot, jak nie ma przekody to dobra informacja, daj punkt
       hasObstacleRight ? 1 : 0,
       hasObstacleBelow ? 1 : 0,
       hasObstacleLeft ? 1 : 0,

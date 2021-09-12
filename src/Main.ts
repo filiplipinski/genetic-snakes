@@ -1,9 +1,9 @@
-import { Game } from "./Game";
-import { GameRenderer } from "./GameRenderer";
-import { ChartRenderer } from "./ChartRenderer";
-import { generateCsv } from "./utils/csvExporter";
-import { LogData } from "./types";
-import { getInputValue } from "./Main.utils";
+import { Game } from './Game';
+import { GameRenderer } from './GameRenderer';
+import { ChartRenderer } from './ChartRenderer';
+import { generateCsv } from './utils/csvExporter';
+import { LogData } from './types';
+import { getInputValue } from './Main.utils';
 
 export class Main {
   private boardSize: number; // ile kratek w szerokosci i wysokosci ma plansza dla snake'a
@@ -25,52 +25,55 @@ export class Main {
   private chartRenderer: ChartRenderer;
   private logs: LogData[] = [];
   private speedModeIntervalId: NodeJS.Timeout;
+  private testNo = 0;
+  private testMaxScore: number[] = [];
+  private testAvgScore: number[] = [];
 
   constructor() {
-    this.gameCanvasElement = document.querySelector(".mid-section__game__canvas");
-    this.startBtnElement = document.querySelector("#start");
-    this.stopBtnElement = document.querySelector("#stop");
-    this.bestSnakeElement = document.querySelector("#best-snake");
+    this.gameCanvasElement = document.querySelector('.mid-section__game__canvas');
+    this.startBtnElement = document.querySelector('#start');
+    this.stopBtnElement = document.querySelector('#stop');
+    this.bestSnakeElement = document.querySelector('#best-snake');
 
     this.chartRenderer = new ChartRenderer();
     this.bindListeners();
   }
 
   private bindListeners() {
-    this.startBtnElement.addEventListener("click", () => this.start("normal"));
-    this.stopBtnElement.addEventListener("click", () => this.stop());
-    this.bestSnakeElement.addEventListener("click", () => this.showBestSnake());
+    this.startBtnElement.addEventListener('click', () => this.start('normal'));
+    this.stopBtnElement.addEventListener('click', () => this.stop());
+    this.bestSnakeElement.addEventListener('click', () => this.showBestSnake());
 
-    document.querySelector("#frame-speed").addEventListener("input", (e) => {
+    document.querySelector('#frame-speed').addEventListener('input', e => {
       this.frameSpeed = parseInt((e.target as HTMLInputElement).value);
     });
-    document.querySelector("#speed-mode-btn")?.addEventListener("click", () => {
+    document.querySelector('#speed-mode-btn')?.addEventListener('click', () => {
       this.runSpeedMode();
     });
-    document.querySelector("#save-to-csv")?.addEventListener("click", () => {
+    document.querySelector('#save-to-csv')?.addEventListener('click', () => {
       this.saveToCsv();
     });
-    document.querySelector(".mid-section__chart__fullscreen-btn")?.addEventListener("click", () => {
-      document.querySelector(".mid-section__chart")?.classList.toggle("mid-section__chart--big");
+    document.querySelector('.mid-section__chart__fullscreen-btn')?.addEventListener('click', () => {
+      document.querySelector('.mid-section__chart')?.classList.toggle('mid-section__chart--big');
     });
-    document.querySelector(".mid-section__chart__save-btn")?.addEventListener("click", () => {
+    document.querySelector('.mid-section__chart__save-btn')?.addEventListener('click', () => {
       this.chartRenderer.downloadChart();
     });
   }
 
   private getInputValues() {
-    this.boardSize = getInputValue("#board-size");
-    this.populationSize = getInputValue("#population-size");
-    this.maxMoves = getInputValue("#max-moves");
-    this.crossoverRate = getInputValue("#crossover-rate") / 100;
-    this.mutationRate = getInputValue("#mutation-rate") / 100;
-    this.frameSpeed = getInputValue("#frame-speed");
-    this.speedModeGenerations = getInputValue("#speed-mode");
+    this.boardSize = getInputValue('#board-size');
+    this.populationSize = getInputValue('#population-size');
+    this.maxMoves = getInputValue('#max-moves');
+    this.crossoverRate = getInputValue('#crossover-rate') / 100;
+    this.mutationRate = getInputValue('#mutation-rate') / 100;
+    this.frameSpeed = getInputValue('#frame-speed');
+    this.speedModeGenerations = getInputValue('#speed-mode');
   }
 
   private setCanvasSize(scale: number = 0.95) {
     // 90% of browser height is snake game, rest is margin
-    const size = document.querySelector(".mid-section__game").clientHeight * scale;
+    const size = document.querySelector('.mid-section__game').clientHeight * scale;
     this.gameCanvasElement.width = size;
     this.gameCanvasElement.height = size;
   }
@@ -81,7 +84,7 @@ export class Main {
     this.gameCanvasElement.height = 0;
   }
 
-  private start(mode: "normal" | "speed") {
+  private start(mode: 'normal' | 'speed') {
     if (this.isGameRunning) this.stop();
     this.logs = [];
     this.renderLogs();
@@ -109,9 +112,64 @@ export class Main {
         this.logs.push(log);
         this.renderLogs();
 
-        if (mode === "speed") {
+        if (mode === 'speed') {
           if (this.game.genetic.generation >= this.speedModeGenerations) {
             this.stop();
+
+            // const noOfEliteIndividuals = this.speedModeGenerations * 0.01;
+            // const popSortedByGeneration = [...this.logs].sort(
+            //   (a, b) => b.generation - a.generation
+            // );
+            // const eliteIndividuals = popSortedByGeneration.filter(
+            //   (_, index) => index < noOfEliteIndividuals
+            // );
+            // const sum = eliteIndividuals.reduce((acc, curr) => {
+            //   return acc + curr.avgScore;
+            // }, 0);
+            // const eliteAvgScore = sum / noOfEliteIndividuals;
+            // koniec nowe
+
+            const bestAvgScore = [...this.logs].sort((a, b) => b.avgScore - a.avgScore)[0].avgScore;
+
+            const lastAvgScore = [...this.logs].sort((a, b) => b.generation - a.generation)[0].avgScore;
+            const bestScoreAtAll = [...this.logs].sort((a, b) => b.bestScore - a.bestScore)[0].bestScore;
+
+            this.testNo++;
+            this.logs = [];
+            // this.testAvgScore.push(lastAvgScore);
+            this.testAvgScore.push(bestAvgScore);
+            this.testMaxScore.push(bestScoreAtAll);
+
+            const exampleWeights = this.game.genetic.population.map(snake => snake.brain.layers[0].weights);
+            console.log('ostatnia populacja wagi 1 layera', this.game.genetic.population);
+
+            console.log('testNo', this.testNo);
+            console.log('lastAvgScore', bestAvgScore);
+            console.log('bestScoreAtAll', bestScoreAtAll);
+            console.log('_________');
+
+            // const maxTests = 10;
+            const maxTests = 5;
+            if (this.testNo >= maxTests) {
+              console.log('WYNIKI!!!');
+              console.log('this.testAvgScore', this.testAvgScore);
+              console.log('this.testMaxScore', this.testMaxScore);
+
+              console.log(
+                'suma potrzebna do srednia z testAvgScore',
+                this.testAvgScore.reduce((a, b) => a + b, 0),
+              );
+              console.log('srednia z testAvgScore', this.testAvgScore.reduce((a, b) => a + b, 0) / maxTests);
+
+              console.log(
+                'suma potrzebna do srednia z testMaxScore',
+                this.testMaxScore.reduce((a, b) => a + b, 0),
+              );
+              console.log('srednia z testMaxScore', this.testMaxScore.reduce((a, b) => a + b, 0) / maxTests);
+              return;
+            }
+
+            this.runSpeedMode();
           }
         } else {
           this.chartRenderer.updateChart(log);
@@ -120,7 +178,7 @@ export class Main {
     });
     this.isGameRunning = true;
 
-    if (mode === "speed") {
+    if (mode === 'speed') {
       return;
     }
 
@@ -141,7 +199,7 @@ export class Main {
   private showBestSnake() {
     const hasConfirmed =
       this.isGameRunning &&
-      confirm("Are you sure you want to run simulation for best snake? It will stop current job.");
+      confirm('Are you sure you want to run simulation for best snake? It will stop current job.');
     if (this.isGameRunning && !hasConfirmed) {
       return;
     }
@@ -172,17 +230,15 @@ export class Main {
   private runSpeedMode() {
     const hasConfirmed =
       this.isGameRunning &&
-      confirm(
-        "Are you sure you want to run speed mode without simulation? It will stop current job."
-      );
+      confirm('Are you sure you want to run speed mode without simulation? It will stop current job.');
     if (this.isGameRunning && !hasConfirmed) {
       return;
     }
 
-    this.start("speed");
+    this.start('speed');
     this.resetCanvas();
 
-    this.speedModeIntervalId = setInterval(() => {
+    this.speedModeIntervalId = global.setInterval(() => {
       for (let i = 0; i < 100; i++) {
         this.game.runStep({ shouldEvolve: true });
       }
@@ -204,10 +260,7 @@ export class Main {
 
     this.game.runStep({ shouldEvolve: false });
 
-    setTimeout(
-      () => requestAnimationFrame(() => this.runLoopForBestSnake()),
-      1000 / this.frameSpeed
-    );
+    setTimeout(() => requestAnimationFrame(() => this.runLoopForBestSnake()), 1000 / this.frameSpeed);
   }
 
   private saveToCsv() {
@@ -216,15 +269,13 @@ export class Main {
   }
 
   private renderLogs() {
-    const logsContainerElement = document.querySelector(".right-section__logs__body");
-    logsContainerElement.innerHTML = "";
+    const logsContainerElement = document.querySelector('.right-section__logs__body');
+    logsContainerElement.innerHTML = '';
 
-    [...this.logs].reverse().forEach((l) => {
-      const p = document.createElement("p");
+    [...this.logs].reverse().forEach(l => {
+      const p = document.createElement('p');
 
-      const logString = `• gen. ${l.generation}, best score: ${
-        l.bestScore
-      }, avg. score: ${l.avgScore.toFixed(2)}`;
+      const logString = `• gen. ${l.generation}, best score: ${l.bestScore}, avg. score: ${l.avgScore.toFixed(2)}`;
 
       p.textContent = logString;
       logsContainerElement.appendChild(p);
